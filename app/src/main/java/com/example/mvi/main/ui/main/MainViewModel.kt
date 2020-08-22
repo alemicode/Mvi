@@ -1,14 +1,17 @@
 package com.example.mvi.main.ui.main
 
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import com.example.mvi.main.model.BlogPost
 import com.example.mvi.main.model.User
+import com.example.mvi.main.repository.Repository
 import com.example.mvi.main.ui.main.state.MainStateEvent
 import com.example.mvi.main.ui.main.state.MainViewState
 import com.example.mvi.main.util.AbsentLiveData
+import com.example.mvi.main.util.DataState
 
 class MainViewModel : ViewModel() {
 
@@ -20,25 +23,26 @@ class MainViewModel : ViewModel() {
     val viewState: LiveData<MainViewState>
         get() = _viewState
 
-    val dataState: LiveData<MainViewState> = Transformations
+    val dataState: LiveData<DataState<MainViewState>> = Transformations
         .switchMap(_stateEvent) {
 
             it?.let {
                 handleStateEvent(it)
             }
+
         }
 
     //handle each condition of state event
-    fun handleStateEvent(it: MainStateEvent): LiveData<MainViewState> {
+    fun handleStateEvent(it: MainStateEvent): LiveData<DataState<MainViewState>> {
         when (it) {
             is MainStateEvent.GetBlogPost -> {
 
-
-                return AbsentLiveData.create()
+                println("debug : send request")
+                return Repository.getBlogPost()
 
             }
             is MainStateEvent.GetUserEvent -> {
-                return AbsentLiveData.create()
+                return Repository.getUser()
             }
             is MainStateEvent.None -> {
                 return AbsentLiveData.create()

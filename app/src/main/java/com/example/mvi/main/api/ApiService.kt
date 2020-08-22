@@ -1,7 +1,9 @@
 package com.example.mvi.main.api
 
+import androidx.lifecycle.LiveData
 import com.example.mvi.main.model.BlogPost
 import com.example.mvi.main.model.User
+import com.example.mvi.main.util.GenericApiResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
 
@@ -12,8 +14,11 @@ interface ApiService {
 
         @Path("userId") userId: String
 
-    ): User
+    ): LiveData<GenericApiResponse<User>>
 
     @GET("placeholder/blogs")
-    fun getBlogs(): List<BlogPost>
+    fun getBlogs(): LiveData<GenericApiResponse<List<BlogPost>>>
+
+
 }
+

@@ -1,12 +1,15 @@
 package com.example.mvi.main.ui.main
 
 
+import android.content.Context
 import android.os.Bundle
 import android.view.*
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.mvi.R
+import com.example.mvi.main.ui.DataStateListener
 import com.example.mvi.main.ui.main.state.MainStateEvent
 import java.lang.Exception
 
@@ -19,6 +22,7 @@ class MainFragment : Fragment() {
     lateinit var viewModel: MainViewModel
 
 
+    lateinit var dataStateHandler: DataStateListener
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -43,26 +47,45 @@ class MainFragment : Fragment() {
             ViewModelProvider(this).get(MainViewModel::class.java)
         } ?: throw Exception("not current activity")
 
-        viewModel.dataState.observe(viewLifecycleOwner, Observer {
+        viewModel.dataState.observe(viewLifecycleOwner, Observer { dataState ->
 
 
-            println("JESS : data state observe")
-            it.blogBlogPost?.let {
+            dataStateHandler.onDataStateChange(dataState)
 
-                viewModel.setBlogPost(it)
+            dataState.data.let { eventState ->
+
+                eventState?.getContentIfNotHandled()?.let {
+                    it.blogBlogPost?.let {
+
+                        viewModel.setBlogPost(it)
+
+                    }
+
+                    it.user?.let {
+
+                        viewModel.setUser(it)
+                    }
+                }
+
             }
-
-            it.user?.let {
-                viewModel.setUser(it)
-
-            }
-
-
         })
+
+
 
         viewModel.viewState.observe(viewLifecycleOwner, Observer {
 
-            println("JESS : viewState")
+            it.blogBlogPost?.let {
+                println("JESS : viewState ${it}")
+
+                Toast.makeText(context, "${it}", Toast.LENGTH_SHORT).show()
+
+            } ?: println("jess erorr")
+
+
+            it.user?.let {
+                Toast.makeText(context, "${it}", Toast.LENGTH_SHORT).show()
+
+            }
         })
 
 
@@ -76,7 +99,6 @@ class MainFragment : Fragment() {
 
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return super.onOptionsItemSelected(item)
         when (item.itemId) {
             R.id.action_getUser -> {
 
@@ -87,6 +109,7 @@ class MainFragment : Fragment() {
                 triggleGetBlogPostEvent()
             }
         }
+        return true
     }
 
     private fun triggleGetBlogPostEvent() {
@@ -96,6 +119,19 @@ class MainFragment : Fragment() {
     private fun triggleGetUserEvent() {
 
         viewModel.setStateEvent(MainStateEvent.GetUserEvent("1"))
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+
+        try {
+            dataStateHandler = context as DataStateListener
+
+        } catch (e: Exception) {
+            println("Debug : ")
+        }
+
     }
 
 }

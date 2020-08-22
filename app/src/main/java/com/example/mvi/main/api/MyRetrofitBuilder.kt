@@ -1,5 +1,7 @@
 package com.example.mvi.main.api
 
+import com.example.mvi.main.util.LiveDataCallAdapter
+import com.example.mvi.main.util.LiveDataCallAdapterFactory
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -11,7 +13,7 @@ object MyRetrofitBuilder {
         Retrofit.Builder()
             .baseUrl("https://open-api.xyz/")
             .addConverterFactory(GsonConverterFactory.create())
-
+            .addCallAdapterFactory(LiveDataCallAdapterFactory())
     }
 
 
@@ -20,4 +22,6 @@ object MyRetrofitBuilder {
         retrofitBuilder.build()
             .create(ApiService::class.java)
     }
+
+
 }

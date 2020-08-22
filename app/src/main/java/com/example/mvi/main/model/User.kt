@@ -7,7 +7,4 @@ data class User(
     val image : String? = null
 ){
 
-    override fun toString(): String {
-        return "file (${email}  ${username} ${image})"
-    }
 }

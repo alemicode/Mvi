@@ -7,7 +7,5 @@ data class BlogPost(
     val body: String? = null
 ) {
 
-    override fun toString(): String {
-        return super.toString()
-    }
+
 }
